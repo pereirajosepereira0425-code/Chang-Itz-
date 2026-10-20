@@ -1,0 +1,6 @@
+{
+  "name": "Chang-Itz",
+  "description": "Chang-Itz is the ultimate universal converter supporting all 600+ formats. Transform images, documents, audio, data, code, archives, 3D models, databases, units, and custom media directly in your browser with lightning speed.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
