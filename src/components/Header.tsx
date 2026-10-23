@@ -3,8 +3,8 @@ import { Sliders, HelpCircle, Sparkles, FolderArchive, Terminal } from 'lucide-r
 import { ChangItzMascot } from './ChangItzMascot';
 
 interface HeaderProps {
-  activeTab: 'convert' | 'batch' | 'studio' | 'matrix' | 'unicode';
-  setActiveTab: (tab: 'convert' | 'batch' | 'studio' | 'matrix' | 'unicode') => void;
+  activeTab: 'convert' | 'batch' | 'studio' | 'matrix' | 'unicode' | 'life';
+  setActiveTab: (tab: 'convert' | 'batch' | 'studio' | 'matrix' | 'unicode' | 'life') => void;
   advancedMode: boolean;
   setAdvancedMode: (v: boolean | ((prev: boolean) => boolean)) => void;
   onOpenLogs?: () => void;
@@ -51,58 +51,70 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Navigation Tabs */}
-        <nav className="flex items-center gap-1 p-1 bg-slate-900/90 rounded-xl border border-slate-800 text-xs font-semibold">
+        <nav className="flex items-center gap-1 p-1 bg-slate-900/90 rounded-xl border border-slate-800 text-xs font-semibold overflow-x-auto max-w-full">
           <button
             onClick={() => setActiveTab('convert')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
               activeTab === 'convert'
                 ? 'bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
             }`}
           >
             <span>⚡</span>
-            <span>Convert File</span>
+            <span>Convert</span>
           </button>
 
           <button
             onClick={() => setActiveTab('batch')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
               activeTab === 'batch'
                 ? 'bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
             }`}
           >
             <span>📦</span>
-            <span>Batch Mode</span>
+            <span>Batch</span>
           </button>
 
           <button
             onClick={() => setActiveTab('studio')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
               activeTab === 'studio'
                 ? 'bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
             }`}
           >
             <span>🪄</span>
-            <span>Instant Studio</span>
+            <span>Studio</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('life')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
+              activeTab === 'life'
+                ? 'bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+            }`}
+          >
+            <span>☕</span>
+            <span>Everyday Life</span>
           </button>
 
           <button
             onClick={() => setActiveTab('matrix')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
               activeTab === 'matrix'
                 ? 'bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
             }`}
           >
             <span>🌐</span>
-            <span>Format Matrix</span>
+            <span>Matrix</span>
           </button>
 
           <button
             onClick={() => setActiveTab('unicode')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
               activeTab === 'unicode'
                 ? 'bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'

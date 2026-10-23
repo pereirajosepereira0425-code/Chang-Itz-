@@ -19,6 +19,7 @@ import { convertPackageFormat } from './converters/packageConverters';
 import { convertTrueHdFormat } from './converters/truehdConverter';
 import { convertToDdlcChr, convertFromDdlcChr } from './converters/ddlcChrConverter';
 import { convertFromNes, convertToNes } from './converters/nesConverter';
+import { convertFromN64, convertToN64, convertFromWad, convertToWad } from './converters/n64WadConverter';
 
 /**
  * Returns list of target format IDs that the given source format can convert into
@@ -31,12 +32,16 @@ export function getAvailableTargets(sourceFormatId: string, includeAll: boolean 
   const src = FORMATS[sourceFormatId] || FORMATS.txt;
   const targets = new Set<string>();
 
-  // Universal targets (NES ROM, DDLC chr, hashes, packages, meme container, zip, hexdump, base64)
-  const universal = ['nes', 'chr', 'bruh', 'apk', 'xapk', 'truehd', 'thd', 'zip', 'hexdump', 'base64', 'sha256', 'sha512', 'sha1', 'md5', 'crc32'];
+  // Universal targets (NES, N64, WAD, DDLC chr, hashes, packages, meme container, zip, hexdump, base64)
+  const universal = ['nes', 'z64', 'n64', 'v64', 'wad', 'chr', 'bruh', 'apk', 'xapk', 'truehd', 'thd', 'zip', 'hexdump', 'base64', 'sha256', 'sha512', 'sha1', 'md5', 'crc32'];
   universal.forEach((t) => targets.add(t));
 
   if (sourceFormatId === 'nes') {
     ['json', 'png', 'chr', 'bin', 'txt', 'hexdump', 'base64', 'zip', 'sha256'].forEach((t) => targets.add(t));
+  } else if (['z64', 'n64', 'v64'].includes(sourceFormatId)) {
+    ['z64', 'n64', 'v64', 'json', 'txt', 'hexdump', 'bin', 'zip', 'sha256'].forEach((t) => targets.add(t));
+  } else if (sourceFormatId === 'wad') {
+    ['wad', 'json', 'txt', 'zip', 'hexdump', 'bin', 'sha256'].forEach((t) => targets.add(t));
   } else if (src.category === 'spreadsheet') {
     ['csv', 'tsv', 'json', 'mdtable', 'html', 'txt'].forEach((t) => targets.add(t));
   } else if (src.category === 'font') {
@@ -298,6 +303,22 @@ export async function executeConversion(
   }
   if (file.name.toLowerCase().endsWith('.nes')) {
     return convertFromNes(file, targetFormat, params);
+  }
+
+  // Nintendo 64 ROM (.z64, .n64, .v64) target or source
+  if (['z64', 'n64', 'v64'].includes(targetFormat)) {
+    return convertToN64(file, targetFormat as 'z64' | 'n64' | 'v64', params);
+  }
+  if (['.z64', '.n64', '.v64'].some((ext) => file.name.toLowerCase().endsWith(ext))) {
+    return convertFromN64(file, targetFormat, params);
+  }
+
+  // DOOM & Wii WAD target or source
+  if (targetFormat === 'wad') {
+    return convertToWad(file, params);
+  }
+  if (file.name.toLowerCase().endsWith('.wad')) {
+    return convertFromWad(file, targetFormat, params);
   }
 
   // DDLC .chr character file target or source

@@ -283,7 +283,54 @@ e_elementary_charge = 1.602176634e-19 C
 `;
   const unitsFile = new File([sampleUnitsSpec], "physics_dimensional_constants.unit", { type: "text/plain" });
 
+  // 18. Sample Nintendo 64 ROM (.z64)
+  const n64Rom = new Uint8Array(64 + 4032 + 8192);
+  // PI BSD DOM1 reg config: 0x80371240 (Big-Endian native)
+  n64Rom[0] = 0x80; n64Rom[1] = 0x37; n64Rom[2] = 0x12; n64Rom[3] = 0x40;
+  // Clock rate
+  n64Rom[4] = 0x00; n64Rom[5] = 0x00; n64Rom[6] = 0x00; n64Rom[7] = 0x0f;
+  // Boot Program Counter: 0x80000400
+  n64Rom[8] = 0x80; n64Rom[9] = 0x00; n64Rom[10] = 0x04; n64Rom[11] = 0x00;
+  // CRC1 & CRC2
+  n64Rom[16] = 0x63; n64Rom[17] = 0x5a; n64Rom[18] = 0x2b; n64Rom[19] = 0x3c;
+  n64Rom[20] = 0x8b; n64Rom[21] = 0x64; n64Rom[22] = 0x12; n64Rom[23] = 0x57;
+  // Title: SUPER MARIO 64
+  const n64Title = "SUPER MARIO 64      ";
+  for (let i = 0; i < 20; i++) n64Rom[32 + i] = n64Title.charCodeAt(i);
+  // Game code: NSME (Super Mario 64 USA)
+  n64Rom[59] = 0x4e; n64Rom[60] = 0x53; n64Rom[61] = 0x4d; n64Rom[62] = 0x45;
+  n64Rom[63] = 0x00;
+  const n64File = new File([n64Rom], "super_mario_64.z64", { type: "application/x-n64-rom" });
+
+  // 19. Sample DOOM Game Resource WAD (.wad)
+  const wadLump1Data = new Uint8Array([0x00, 0x00, 0x00, 0x01, 0x02, 0x03]); // Palette
+  const wadLump2Data = new TextEncoder().encode("Chang-Itz E1M1: Hangar map block");
+  const wadTotal = new Uint8Array(12 + wadLump1Data.length + wadLump2Data.length + 32);
+  const wadView = new DataView(wadTotal.buffer);
+  // Magic: "IWAD"
+  wadTotal[0] = 0x49; wadTotal[1] = 0x57; wadTotal[2] = 0x41; wadTotal[3] = 0x44;
+  wadView.setInt32(4, 2, true); // 2 lumps
+  const wadDirOffset = 12 + wadLump1Data.length + wadLump2Data.length;
+  wadView.setInt32(8, wadDirOffset, true);
+  // Lump 1 data
+  wadTotal.set(wadLump1Data, 12);
+  // Lump 2 data
+  wadTotal.set(wadLump2Data, 12 + wadLump1Data.length);
+  // Lump 1 entry: offset 12, size 6, name "PLAYPAL"
+  wadView.setInt32(wadDirOffset, 12, true);
+  wadView.setInt32(wadDirOffset + 4, wadLump1Data.length, true);
+  const name1 = "PLAYPAL\0";
+  for (let i = 0; i < 8; i++) wadTotal[wadDirOffset + 8 + i] = name1.charCodeAt(i);
+  // Lump 2 entry: offset 18, size len, name "E1M1"
+  wadView.setInt32(wadDirOffset + 16, 12 + wadLump1Data.length, true);
+  wadView.setInt32(wadDirOffset + 20, wadLump2Data.length, true);
+  const name2 = "E1M1\0\0\0\0";
+  for (let i = 0; i < 8; i++) wadTotal[wadDirOffset + 24 + i] = name2.charCodeAt(i);
+  const wadFile = new File([wadTotal], "doom1_shareware.wad", { type: "application/x-doom-wad" });
+
   return [
+    { name: "super_mario_64.z64", category: "archive", emoji: "🎮", description: "Authentic Nintendo 64 cartridge ROM in native Big-Endian byte order", file: n64File },
+    { name: "doom1_shareware.wad", category: "archive", emoji: "👹", description: "id Software DOOM IWAD game resource package with lump directory", file: wadFile },
     { name: "super_chang_itz_bros.nes", category: "archive", emoji: "🎮", description: "Authentic 8-bit NES cartridge ROM with PRG code and CHR pattern sprite tables", file: nesFile },
     { name: "chang_itz_mascot.jpg", category: "image", emoji: "🦊", description: "Official Chang-Itz Mascot FlipaClip artwork (User authentic art)", file: mascotFile },
     { name: "global_financials_2026.tsv", category: "spreadsheet", emoji: "📊", description: "Tabular spreadsheet with quarterly revenues, expenses, profit & auditor notes", file: spreadsheetFile },

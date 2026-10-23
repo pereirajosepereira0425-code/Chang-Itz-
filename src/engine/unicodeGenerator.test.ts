@@ -101,4 +101,88 @@ test('Format Matrix includes required categories with expanded formats and .nes 
   assert.ok(FORMATS.pressure_unit, '.pressure exists in units matrix');
   assert.ok(FORMATS.energy_unit, '.energy exists in units matrix');
   assert.ok(FORMATS.astro_unit, '.astro exists in units matrix');
+
+  // 6. N64 and WAD formats
+  assert.ok(FORMATS.z64, 'FORMATS.z64 exists');
+  assert.equal(FORMATS.z64.category, 'archive', 'z64 is archive category');
+  assert.equal(FORMATS.z64.isBinary, true, 'z64 is binary');
+  assert.ok(FORMATS.n64, 'FORMATS.n64 exists');
+  assert.equal(FORMATS.n64.category, 'archive', 'n64 is archive category');
+  assert.ok(FORMATS.v64, 'FORMATS.v64 exists');
+  assert.ok(FORMATS.wad, 'FORMATS.wad exists');
+  assert.equal(FORMATS.wad.category, 'archive', 'wad is archive category');
+  assert.equal(FORMATS.wad.isBinary, true, 'wad is binary');
+});
+
+test('N64 ROM Endianness Engine detects, parses, and swaps bytes correctly', async () => {
+  const {
+    detectN64Endianness,
+    toBigEndianZ64,
+    toByteSwappedV64,
+    toLittleEndianN64,
+    parseN64Header,
+  } = await import('./converters/n64WadConverter.ts');
+
+  // Sample Big-Endian N64 ROM header (magic 0x80371240)
+  const beHeader = new Uint8Array(64);
+  beHeader[0] = 0x80; beHeader[1] = 0x37; beHeader[2] = 0x12; beHeader[3] = 0x40;
+  // Game Title at offset 32: "SUPER MARIO 64      "
+  const title = 'SUPER MARIO 64      ';
+  for (let i = 0; i < 20; i++) beHeader[32 + i] = title.charCodeAt(i);
+  // Game Code at offset 59: "NSME"
+  beHeader[59] = 0x4e; beHeader[60] = 0x53; beHeader[61] = 0x4d; beHeader[62] = 0x45;
+
+  assert.equal(detectN64Endianness(beHeader), 'big', 'Detects big endian (.z64)');
+
+  // Convert to Byte-Swapped (.v64)
+  const v64 = toByteSwappedV64(beHeader);
+  assert.equal(detectN64Endianness(v64), 'byteswapped', 'Detects byte-swapped (.v64)');
+  assert.equal(v64[0], 0x37);
+  assert.equal(v64[1], 0x80);
+  assert.equal(v64[2], 0x40);
+  assert.equal(v64[3], 0x12);
+
+  // Convert to Little-Endian (.n64)
+  const n64 = toLittleEndianN64(beHeader);
+  assert.equal(detectN64Endianness(n64), 'little', 'Detects little endian (.n64)');
+  assert.equal(n64[0], 0x40);
+  assert.equal(n64[1], 0x12);
+  assert.equal(n64[2], 0x37);
+  assert.equal(n64[3], 0x80);
+
+  // Convert v64 back to Big-Endian
+  const restoredFromV64 = toBigEndianZ64(v64);
+  assert.equal(detectN64Endianness(restoredFromV64), 'big', 'Restores to big endian from v64');
+  assert.equal(restoredFromV64[0], 0x80);
+
+  // Parse header
+  const parsed = parseN64Header(beHeader);
+  assert.equal(parsed.gameTitle, 'SUPER MARIO 64');
+  assert.equal(parsed.gameCode, 'NSME');
+  assert.equal(parsed.destinationCode, 'E');
+  assert.equal(parsed.destinationRegion, 'North America (NTSC)');
+});
+
+test('DOOM WAD Engine correctly parses lumps and packages lumps', async () => {
+  const { parseWadHeader } = await import('./converters/n64WadConverter.ts');
+
+  // Build a sample IWAD with 1 lump
+  const wad = new Uint8Array(12 + 4 + 16);
+  const view = new DataView(wad.buffer);
+  wad[0] = 0x49; wad[1] = 0x57; wad[2] = 0x41; wad[3] = 0x44; // "IWAD"
+  view.setInt32(4, 1, true); // 1 lump
+  view.setInt32(8, 16, true); // directory at offset 16
+  // Lump payload
+  wad[12] = 0xde; wad[13] = 0xad; wad[14] = 0xbe; wad[15] = 0xef;
+  // Lump entry: offset 12, size 4, name "PLAYPAL"
+  view.setInt32(16, 12, true);
+  view.setInt32(20, 4, true);
+  const name = 'PLAYPAL\0';
+  for (let i = 0; i < 8; i++) wad[24 + i] = name.charCodeAt(i);
+
+  const parsedWad = parseWadHeader(wad);
+  assert.equal(parsedWad.type, 'IWAD');
+  assert.equal(parsedWad.numLumps, 1);
+  assert.equal(parsedWad.lumps[0].name, 'PLAYPAL');
+  assert.equal(parsedWad.lumps[0].size, 4);
 });
