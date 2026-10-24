@@ -328,7 +328,76 @@ e_elementary_charge = 1.602176634e-19 C
   for (let i = 0; i < 8; i++) wadTotal[wadDirOffset + 24 + i] = name2.charCodeAt(i);
   const wadFile = new File([wadTotal], "doom1_shareware.wad", { type: "application/x-doom-wad" });
 
+  // 20. Sample High-Precision Archimedes Constant & Circle Physics (.PI)
+  const samplePiContent = `# ====================================================================
+# 🥧 CHANG-ITZ MATHEMATICAL π (PI) SPECIFICATION v1.0
+# ====================================================================
+[FUNDAMENTAL_PI_CONSTANTS]
+PI                   = 3.141592653589793
+TWO_PI (TAU τ)       = 6.283185307179586
+HALF_PI (π/2)        = 1.570796326794897
+EULERS_IDENTITY      = e^(i*π) + 1 = 0
+
+[HIGH_PRECISION_EXPANSION]
+π = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679
+
+[CIRCLE_PHYSICS (r = 5.0)]
+radius               = 5.0
+circumference (2πr)  = 31.41592654
+circle_area (πr²)    = 78.53981634
+sphere_volume        = 523.59877560
+`;
+  const piFile = new File([samplePiContent], "archimedes_circle.PI", { type: "text/plain" });
+
+  // 21. Sample 3D Spatial Vector (.Vector3)
+  const sampleVec3Content = `# ====================================================================
+# 📐 CHANG-ITZ 3D SPATIAL VECTOR (.Vector3)
+# ====================================================================
+[CARTESIAN_COORDINATES]
+x = 3.0
+y = 4.0
+z = 12.0
+
+[VECTOR_METRICS]
+magnitude (length)   = 13.00000000
+normalized_unit_x    = 0.23076923
+normalized_unit_y    = 0.30769231
+normalized_unit_z    = 0.92307692
+
+[ENGINE_CODE_SNIPPETS]
+ThreeJS  : new THREE.Vector3(3.0, 4.0, 12.0)
+Unity C# : new UnityEngine.Vector3(3.0f, 4.0f, 12.0f)
+Unreal   : FVector(3.0f, 4.0f, 12.0f)
+`;
+  const vec3File = new File([sampleVec3Content], "velocity_vector.Vector3", { type: "text/plain" });
+
+  // 22. Sample 4D Rotation Quaternion (.quaternion)
+  const sampleQuatContent = `# ====================================================================
+# 🔄 CHANG-ITZ 4D ROTATION QUATERNION (.quaternion)
+# ====================================================================
+[HAMILTON_HYPERCOMPLEX_FORM]
+w = 0.70710678
+x = 0.00000000
+y = 0.70710678
+z = 0.00000000
+
+[EULER_ANGLES_TAIT_BRYAN_ZYX]
+roll_x_pitch_yaw     = Roll: 0.00°, Pitch: 90.00°, Yaw: 0.00°
+
+[AXIS_ANGLE_REPRESENTATION]
+rotation_angle (θ)   = 1.570796 rad (90.00°)
+rotation_axis (x,y,z)= [0.000000, 1.000000, 0.000000]
+
+[ENGINE_CODE_SNIPPETS]
+ThreeJS  : new THREE.Quaternion(0.0, 0.707107, 0.0, 0.707107)
+Unity C# : new UnityEngine.Quaternion(0.0f, 0.707107f, 0.0f, 0.707107f)
+`;
+  const quatFile = new File([sampleQuatContent], "rotation_y90.quaternion", { type: "text/plain" });
+
   return [
+    { name: "archimedes_circle.PI", category: "units", emoji: "🥧", description: "Archimedes π circle physics, radian trigonometrics & high-precision expansion", file: piFile },
+    { name: "velocity_vector.Vector3", category: "model", emoji: "📐", description: "3D Spatial Cartesian vector (3, 4, 12) with magnitude & normalized unit vectors", file: vec3File },
+    { name: "rotation_y90.quaternion", category: "model", emoji: "🔄", description: "4D Rotation Quaternion representing 90-degree yaw rotation around Y axis", file: quatFile },
     { name: "super_mario_64.z64", category: "archive", emoji: "🎮", description: "Authentic Nintendo 64 cartridge ROM in native Big-Endian byte order", file: n64File },
     { name: "doom1_shareware.wad", category: "archive", emoji: "👹", description: "id Software DOOM IWAD game resource package with lump directory", file: wadFile },
     { name: "super_chang_itz_bros.nes", category: "archive", emoji: "🎮", description: "Authentic 8-bit NES cartridge ROM with PRG code and CHR pattern sprite tables", file: nesFile },

@@ -8125,6 +8125,39 @@ export const FORMATS: Record<string, FormatDefinition> = {
     isBinary: false,
     isTextBased: true,
   },
+  "pi": {
+    id: "pi",
+    name: "Archimedes π Circle & Radiant Physics (.PI)",
+    extension: ".PI",
+    category: "units" as FormatCategory,
+    mimeTypes: ["text/plain", "application/x-pi"],
+    description: "High-precision Archimedes π constant expansion, circle trigonometrics, Euler formula, radian conversions & harmonic wave generator",
+    emoji: "🥧",
+    isBinary: false,
+    isTextBased: true,
+  },
+  "vector3": {
+    id: "vector3",
+    name: "3D Spatial Vector Coordinates (.Vector3)",
+    extension: ".Vector3",
+    category: "model" as FormatCategory,
+    mimeTypes: ["text/plain", "application/x-vector3"],
+    description: "Three-dimensional Cartesian vector (x, y, z) with spherical coordinates (r, θ, φ), magnitude, direction cosines, and dot/cross products",
+    emoji: "📐",
+    isBinary: false,
+    isTextBased: true,
+  },
+  "quaternion": {
+    id: "quaternion",
+    name: "Spatial 4D Rotation Quaternion (.quaternion)",
+    extension: ".quaternion",
+    category: "model" as FormatCategory,
+    mimeTypes: ["text/plain", "application/x-quaternion"],
+    description: "4-dimensional orientation hypercomplex number (x, y, z, w), normalized unit quaternion, Euler (pitch/yaw/roll), 3x3 rotation matrix, and SLERP",
+    emoji: "🔄",
+    isBinary: false,
+    isTextBased: true,
+  },
 };
 
 export const TOTAL_FORMAT_COUNT = Object.keys(FORMATS).length;
@@ -8136,6 +8169,9 @@ export function detectFormat(file: File): FormatDefinition {
   const name = file.name.toLowerCase();
   const mime = file.type.toLowerCase();
 
+  if (name.endsWith('.pi')) return FORMATS.pi;
+  if (name.endsWith('.vector3') || name.endsWith('.vec3')) return FORMATS.vector3;
+  if (name.endsWith('.quaternion') || name.endsWith('.quat')) return FORMATS.quaternion;
   if (name.endsWith('.nes')) return FORMATS.nes;
   if (name.endsWith('.z64')) return FORMATS.z64;
   if (name.endsWith('.n64')) return FORMATS.n64;

@@ -7,7 +7,6 @@ import { BatchConverter } from './components/BatchConverter';
 import { InstantStudio } from './components/InstantStudio';
 import { FormatExplorer } from './components/FormatExplorer';
 import { RandomUnicodeGenerator } from './components/RandomUnicodeGenerator';
-import { EverydayLifeHub } from './components/EverydayLifeHub';
 import { ConversionLogsModal } from './components/ConversionLogsModal';
 import { MascotModal } from './components/MascotModal';
 import { Footer } from './components/Footer';
@@ -18,7 +17,7 @@ import confetti from 'canvas-confetti';
 import { createSampleFiles } from './engine/sampleFiles';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'convert' | 'batch' | 'studio' | 'matrix' | 'unicode' | 'life'>('convert');
+  const [activeTab, setActiveTab] = useState<'convert' | 'batch' | 'studio' | 'matrix' | 'unicode'>('convert');
   const [advancedMode, setAdvancedMode] = useState<boolean>(false);
   const [isMascotModalOpen, setIsMascotModalOpen] = useState<boolean>(false);
 
@@ -166,17 +165,6 @@ export default function App() {
 
         {/* TAB 3: INSTANT STUDIO */}
         {activeTab === 'studio' && <InstantStudio />}
-
-        {/* TAB 4: EVERYDAY LIFE & SMART UTILITIES */}
-        {activeTab === 'life' && (
-          <EverydayLifeHub
-            onSendToConverter={(file, targetFormat) => {
-              handleFileSelected(file);
-              if (targetFormat) setTargetFormatId(targetFormat);
-              setActiveTab('convert');
-            }}
-          />
-        )}
 
         {/* TAB 5: FORMAT MATRIX & EXPLORER */}
         {activeTab === 'matrix' && (

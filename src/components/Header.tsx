@@ -3,8 +3,8 @@ import { Sliders, HelpCircle, Sparkles, FolderArchive, Terminal } from 'lucide-r
 import { ChangItzMascot } from './ChangItzMascot';
 
 interface HeaderProps {
-  activeTab: 'convert' | 'batch' | 'studio' | 'matrix' | 'unicode' | 'life';
-  setActiveTab: (tab: 'convert' | 'batch' | 'studio' | 'matrix' | 'unicode' | 'life') => void;
+  activeTab: 'convert' | 'batch' | 'studio' | 'matrix' | 'unicode';
+  setActiveTab: (tab: 'convert' | 'batch' | 'studio' | 'matrix' | 'unicode') => void;
   advancedMode: boolean;
   setAdvancedMode: (v: boolean | ((prev: boolean) => boolean)) => void;
   onOpenLogs?: () => void;
@@ -88,17 +88,6 @@ export const Header: React.FC<HeaderProps> = ({
             <span>Studio</span>
           </button>
 
-          <button
-            onClick={() => setActiveTab('life')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${
-              activeTab === 'life'
-                ? 'bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-            }`}
-          >
-            <span>☕</span>
-            <span>Everyday Life</span>
-          </button>
 
           <button
             onClick={() => setActiveTab('matrix')}

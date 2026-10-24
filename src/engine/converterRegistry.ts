@@ -20,6 +20,7 @@ import { convertTrueHdFormat } from './converters/truehdConverter';
 import { convertToDdlcChr, convertFromDdlcChr } from './converters/ddlcChrConverter';
 import { convertFromNes, convertToNes } from './converters/nesConverter';
 import { convertFromN64, convertToN64, convertFromWad, convertToWad } from './converters/n64WadConverter';
+import { convertToPi, convertToVector3, convertToQuaternion, convertFromSpatialMath } from './converters/spatialMathConverter';
 
 /**
  * Returns list of target format IDs that the given source format can convert into
@@ -32,11 +33,13 @@ export function getAvailableTargets(sourceFormatId: string, includeAll: boolean 
   const src = FORMATS[sourceFormatId] || FORMATS.txt;
   const targets = new Set<string>();
 
-  // Universal targets (NES, N64, WAD, DDLC chr, hashes, packages, meme container, zip, hexdump, base64)
-  const universal = ['nes', 'z64', 'n64', 'v64', 'wad', 'chr', 'bruh', 'apk', 'xapk', 'truehd', 'thd', 'zip', 'hexdump', 'base64', 'sha256', 'sha512', 'sha1', 'md5', 'crc32'];
+  // Universal targets (PI, Vector3, Quaternion, NES, N64, WAD, DDLC chr, hashes, packages, meme container, zip, hexdump, base64)
+  const universal = ['pi', 'vector3', 'quaternion', 'nes', 'z64', 'n64', 'v64', 'wad', 'chr', 'bruh', 'apk', 'xapk', 'truehd', 'thd', 'zip', 'hexdump', 'base64', 'sha256', 'sha512', 'sha1', 'md5', 'crc32'];
   universal.forEach((t) => targets.add(t));
 
-  if (sourceFormatId === 'nes') {
+  if (['pi', 'vector3', 'quaternion'].includes(sourceFormatId)) {
+    ['pi', 'vector3', 'quaternion', 'json', 'csv', 'txt', 'hexdump', 'base64'].forEach((t) => targets.add(t));
+  } else if (sourceFormatId === 'nes') {
     ['json', 'png', 'chr', 'bin', 'txt', 'hexdump', 'base64', 'zip', 'sha256'].forEach((t) => targets.add(t));
   } else if (['z64', 'n64', 'v64'].includes(sourceFormatId)) {
     ['z64', 'n64', 'v64', 'json', 'txt', 'hexdump', 'bin', 'zip', 'sha256'].forEach((t) => targets.add(t));
@@ -303,6 +306,20 @@ export async function executeConversion(
   }
   if (file.name.toLowerCase().endsWith('.nes')) {
     return convertFromNes(file, targetFormat, params);
+  }
+
+  // Spatial Math & Physics (.PI, .Vector3, .quaternion)
+  if (targetFormat === 'pi') {
+    return convertToPi(file, params);
+  }
+  if (targetFormat === 'vector3') {
+    return convertToVector3(file, params);
+  }
+  if (targetFormat === 'quaternion') {
+    return convertToQuaternion(file, params);
+  }
+  if (['.pi', '.vector3', '.vec3', '.quaternion', '.quat'].some((ext) => file.name.toLowerCase().endsWith(ext))) {
+    return convertFromSpatialMath(file, targetFormat, params);
   }
 
   // Nintendo 64 ROM (.z64, .n64, .v64) target or source

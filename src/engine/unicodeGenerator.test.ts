@@ -186,3 +186,36 @@ test('DOOM WAD Engine correctly parses lumps and packages lumps', async () => {
   assert.equal(parsedWad.lumps[0].name, 'PLAYPAL');
   assert.equal(parsedWad.lumps[0].size, 4);
 });
+
+test('Spatial Math Engine correctly converts to .PI, .Vector3, and .quaternion', async () => {
+  const {
+    convertToPi,
+    convertToVector3,
+    convertToQuaternion,
+  } = await import('./converters/spatialMathConverter.ts');
+
+  // 1. Test .PI conversion
+  const testFilePi = new File(["5.0\n10.0\n20.0"], "test_radius.txt", { type: "text/plain" });
+  const resultPi = await convertToPi(testFilePi);
+  assert.equal(resultPi.outputFormat, 'pi');
+  assert.ok(resultPi.outputName.endsWith('.PI'), 'Output name ends with .PI');
+  assert.ok(String(resultPi.data).includes('3.1415926535'), 'Contains PI constant');
+  assert.ok(String(resultPi.data).includes('circle_area'), 'Contains circle area calculation');
+
+  // 2. Test .Vector3 conversion
+  const testFileVec = new File(["3.0 4.0 12.0"], "point.txt", { type: "text/plain" });
+  const resultVec = await convertToVector3(testFileVec);
+  assert.equal(resultVec.outputFormat, 'vector3');
+  assert.ok(resultVec.outputName.endsWith('.Vector3'), 'Output name ends with .Vector3');
+  assert.ok(String(resultVec.data).includes('magnitude (length)   = 13.00000000'), 'Length of (3,4,12) is 13');
+  assert.ok(String(resultVec.data).includes('ThreeJS'), 'Contains ThreeJS snippet');
+
+  // 3. Test .quaternion conversion
+  const testFileQuat = new File(["0.0 0.70710678 0.0 0.70710678"], "orient.txt", { type: "text/plain" });
+  const resultQuat = await convertToQuaternion(testFileQuat);
+  assert.equal(resultQuat.outputFormat, 'quaternion');
+  assert.ok(resultQuat.outputName.endsWith('.quaternion'), 'Output name ends with .quaternion');
+  assert.ok(String(resultQuat.data).includes('EULER_ANGLES'), 'Contains Euler angle conversion');
+  assert.ok(String(resultQuat.data).includes('3X3_ROTATION_MATRIX'), 'Contains 3x3 rotation matrix');
+});
+

@@ -30,6 +30,9 @@ export const DropZone: React.FC<DropZoneProps> = ({
 
   // Popular target format shortcuts
   const popularTargets = [
+    { id: 'pi', label: '.PI Math', emoji: '🥧' },
+    { id: 'vector3', label: '.Vector3', emoji: '📐' },
+    { id: 'quaternion', label: '.quaternion', emoji: '🔄' },
     { id: 'z64', label: 'N64 (.z64)', emoji: '🎮' },
     { id: 'n64', label: 'N64 (.n64)', emoji: '🎮' },
     { id: 'wad', label: 'DOOM/Wii .wad', emoji: '👹' },
