@@ -205,13 +205,15 @@ export function preloadPopularGoogleFonts(count: number = 25): void {
   popular.forEach((f) => loadGoogleFont(f.name));
 }
 
+export const UNIVERSAL_FONT_FALLBACK = `'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Sans Symbols 2', 'Noto Sans Math', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans KR', 'Segoe UI Symbol', 'Symbola', 'Arial Unicode MS', 'DejaVu Sans', sans-serif`;
+
 /**
- * Returns a random Google Font name from the catalog
+ * Returns a random Google Font name from the catalog with universal unicode fallback
  */
 export function getRandomGoogleFont(): string {
   const font = GOOGLE_FONTS_CATALOG[Math.floor(Math.random() * GOOGLE_FONTS_CATALOG.length)];
   loadGoogleFont(font.name);
-  return `"${font.name}", ${font.category}`;
+  return `"${font.name}", ${font.category}, ${UNIVERSAL_FONT_FALLBACK}`;
 }
 
 /**

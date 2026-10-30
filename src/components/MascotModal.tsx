@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { X, Upload, Image as ImageIcon, Sparkles, Check, RotateCcw, Download, Heart } from 'lucide-react';
+import { X, Upload, Image as ImageIcon, Sparkles, Check, RotateCcw, Download, Heart, Volume2 } from 'lucide-react';
+import { speakChangiVoice } from './ChangItzMascot';
 
 interface MascotModalProps {
   isOpen: boolean;
@@ -241,6 +242,31 @@ export const MascotModal: React.FC<MascotModalProps> = ({ isOpen, onClose, onMas
               </button>
             )}
           </div>
+        </div>
+
+        {/* Mascot Voiceline */}
+        <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <div className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+              <span>🔊</span>
+              <span>Official Mascot Voiceline</span>
+            </div>
+            <div className="text-[11px] text-amber-400 font-mono mt-0.5">
+              "hi my name is changi mew"
+            </div>
+            <div className="text-[10px] text-slate-400">
+              Pronounced: <span className="text-slate-300 font-semibold">"chan guie"</span> (replaces previous voiceline)
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => speakChangiVoice()}
+            className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-md shadow-amber-500/20 shrink-0 transition-all hover:scale-105 active:scale-95"
+            title="Hear Changi say: hi my name is changi mew (spoken as chan guie)"
+          >
+            <Volume2 className="w-3.5 h-3.5" />
+            <span>Play Voice</span>
+          </button>
         </div>
 
         {/* Footer actions */}

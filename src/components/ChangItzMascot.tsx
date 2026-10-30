@@ -12,8 +12,14 @@ interface ChangItzMascotProps {
   onOpenMascotModal?: () => void;
 }
 
+export const CHANGI_PRIMARY_VOICELINE_TEXT = "hi my name is changi mew";
+export const CHANGI_PRIMARY_VOICELINE_SPEECH = "hi my name is chan guie mew";
+export const CHANGI_AUDIO_URL = "/assets/aistudio/Hi_my_name_s_changi_mew_46fd4e3f.m4a";
+
+let activeMascotAudio: HTMLAudioElement | null = null;
+
 const MASCOT_QUOTES = [
-  "Feed me bytes, I'll Chang-Itz! 🚀",
+  CHANGI_PRIMARY_VOICELINE_TEXT,
   "Powered by triple peppermint turbo engines! 🍬",
   "600+ formats? Just another snack for me! 😋",
   "Drop your file right here, let's transform it! ✨",
@@ -22,6 +28,67 @@ const MASCOT_QUOTES = [
   "FlipaClip official mascot! 🎨",
   "Click me to pet or customize! 🐾",
 ];
+
+// Spoken voice helper: plays the user's authentic uploaded audio recording and cancels any previous audio immediately
+export function speakChangiVoice() {
+  if (typeof window === 'undefined') return;
+
+  // 1. Immediately pause and reset any previous voiceline audio so this voiceline replaces it
+  if (activeMascotAudio) {
+    try {
+      activeMascotAudio.pause();
+      activeMascotAudio.currentTime = 0;
+    } catch {
+      // Audio pause failed
+    }
+    activeMascotAudio = null;
+  }
+
+  // 2. Cancel any active Web Speech synthesis
+  try {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+  } catch {
+    // Speech synthesis unavailable
+  }
+
+  // 3. Play the authentic user-provided voiceline recording: /assets/aistudio/Hi_my_name_s_changi_mew_46fd4e3f.m4a
+  try {
+    const audio = new Audio(CHANGI_AUDIO_URL);
+    activeMascotAudio = audio;
+    audio.volume = 1.0;
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch((err) => {
+        console.warn('Audio element play failed, falling back to speech synthesis:', err);
+        fallbackSpeechSynthesis();
+      });
+    }
+  } catch {
+    fallbackSpeechSynthesis();
+  }
+}
+
+function fallbackSpeechSynthesis() {
+  try {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(CHANGI_PRIMARY_VOICELINE_SPEECH);
+      utterance.pitch = 1.75;
+      utterance.rate = 1.05;
+      const voices = window.speechSynthesis.getVoices();
+      const cuteVoice = voices.find((v) =>
+        v.lang.startsWith('en') &&
+        (v.name.includes('Natural') || v.name.includes('Female') || v.name.includes('Samantha') || v.name.includes('Google') || v.name.includes('Zira'))
+      );
+      if (cuteVoice) utterance.voice = cuteVoice;
+      window.speechSynthesis.speak(utterance);
+    }
+  } catch {
+    // Speech synthesis unsupported
+  }
+}
 
 // The Official FlipaClip User Artwork Image
 export const DEFAULT_MASCOT_IMAGE_URL = '/assets/aistudio/Screenshot_20261017_133833_FlipaClip_74400130.jpg';
@@ -71,7 +138,7 @@ export const ChangItzMascot: React.FC<ChangItzMascotProps> = ({
   const handleMascotClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setPetCount((prev) => prev + 1);
-    setClickedQuote("my names changi! Mew");
+    setClickedQuote(CHANGI_PRIMARY_VOICELINE_TEXT);
     if (quoteTimeoutRef.current) clearTimeout(quoteTimeoutRef.current);
     quoteTimeoutRef.current = setTimeout(() => {
       setClickedQuote(null);
@@ -80,39 +147,8 @@ export const ChangItzMascot: React.FC<ChangItzMascotProps> = ({
     setIsWiggling(true);
     setTimeout(() => setIsWiggling(false), 500);
 
-    // 1. Spoken voice: "my names changi! Mew" via Web Speech API
-    try {
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance("my names changi! Mew");
-        utterance.pitch = 1.7; // cute mascot pitch
-        utterance.rate = 1.05;
-        window.speechSynthesis.speak(utterance);
-      }
-    } catch {
-      // Speech synthesis unsupported or blocked
-    }
-
-    // 2. Synthesized authentic cat mew contour via Web Audio API
-    try {
-      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'triangle';
-      const t = audioCtx.currentTime;
-      // Frequency ramps up like a cheerful mew (440Hz -> 860Hz -> 680Hz)
-      osc.frequency.setValueAtTime(440, t);
-      osc.frequency.linearRampToValueAtTime(860, t + 0.12);
-      osc.frequency.exponentialRampToValueAtTime(680, t + 0.28);
-      gain.gain.setValueAtTime(0.12, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.32);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start(t);
-      osc.stop(t + 0.33);
-    } catch {
-      // AudioContext unavailable
-    }
+    // Speak with Web Speech API and Web Audio mew, immediately replacing any previous audio
+    speakChangiVoice();
 
     if (onClick) onClick();
   };
@@ -136,7 +172,7 @@ export const ChangItzMascot: React.FC<ChangItzMascotProps> = ({
     >
       {/* Speech Bubble: shows permanently if showBubble, or temporarily on click */}
       {(showBubble || clickedQuote) && (
-        <div className="mb-2 max-w-xs animate-bounce text-center z-20">
+        <div className="absolute -top-11 left-1/2 -translate-x-1/2 z-50 animate-bounce pointer-events-none whitespace-nowrap">
           <div className="relative px-3 py-1.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-pink-500 text-slate-950 text-[11px] font-black shadow-lg shadow-amber-500/20 flex items-center gap-1.5 whitespace-nowrap">
             <span>🐾</span>
             <span>{currentQuote}</span>

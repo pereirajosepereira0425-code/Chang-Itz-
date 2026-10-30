@@ -242,4 +242,55 @@ test('Convert-Master Engine parses Portal 2 demos, RTTTL ringtones, and formats'
   assert.ok(parsedRtttl.notes.length > 5, 'Parsed more than 5 notes');
 });
 
+test('Universal Unicode Glyphs and Changi Speech Pronunciation', async () => {
+  const { isPrivateUseOrControl, UNIVERSAL_FALLBACK_FONTS } = await import('../components/UnicodeGlyph.tsx');
+  const { UNIVERSAL_FONT_FALLBACK, generateRandomUnicode } = await import('./unicodeGenerator.ts');
+
+  // Verify universal font fallback includes Noto Emoji & Symbols
+  assert.ok(UNIVERSAL_FALLBACK_FONTS.includes('Noto Color Emoji'), 'Includes Noto Color Emoji');
+  assert.ok(UNIVERSAL_FALLBACK_FONTS.includes('Noto Sans Symbols 2'), 'Includes Noto Sans Symbols 2');
+  assert.ok(UNIVERSAL_FONT_FALLBACK.includes('Noto Sans Math'), 'Includes Noto Sans Math');
+
+  // Verify PUA and control character detection
+  assert.equal(isPrivateUseOrControl(0xE050), true, 'Detects BMP PUA');
+  assert.equal(isPrivateUseOrControl(0xF8FF), true, 'Detects Apple Logo U+F8FF');
+  assert.equal(isPrivateUseOrControl(0x0041), false, 'Normal Latin A is not PUA');
+  assert.equal(isPrivateUseOrControl(0x2728), false, 'Sparkles is not PUA');
+
+  // Verify random character generation attaches universal fallback
+  const chars = generateRandomUnicode(5, {
+    includeCJK: true,
+    includePrivateUse: false,
+    includeDeprecated: true,
+    includeLatest16: true,
+    includeLegacySystems: true,
+    includeSubstitutes: true,
+    includeEbcdic: true,
+    fullRandomMode: false,
+    randomColors: true,
+    randomSizes: true,
+    randomFonts: true,
+    fontSizeBase: 48,
+  });
+
+  chars.forEach((c) => {
+    assert.ok(c.char.length > 0, 'Character is not empty');
+    if (c.fontFamily) {
+      assert.ok(c.fontFamily.includes('Noto'), 'Font family includes universal Noto fallback');
+    }
+  });
+
+  // Verify Changi voiceline audio and text replace previous voiceline
+  const { CHANGI_PRIMARY_VOICELINE_TEXT, CHANGI_PRIMARY_VOICELINE_SPEECH, CHANGI_AUDIO_URL } = await import('../components/ChangItzMascot.tsx');
+  assert.equal(CHANGI_PRIMARY_VOICELINE_TEXT, "hi my name is changi mew", 'Voiceline text is hi my name is changi mew');
+  assert.equal(CHANGI_PRIMARY_VOICELINE_SPEECH, "hi my name is chan guie mew", 'Voiceline speech is chan guie mew');
+  assert.ok(CHANGI_AUDIO_URL.includes('Hi_my_name_s_changi_mew'), 'Voiceline uses uploaded audio file');
+
+  const { isCombiningDiacritic, getDisplayCharacter } = await import('../components/UnicodeGlyph.tsx');
+  assert.equal(isCombiningDiacritic(0x0303), true, 'Detects combining tilde');
+  assert.ok(getDisplayCharacter('\u0303', 0x0303).startsWith('\u25CC'), 'Combining character has dotted circle base');
+  assert.equal(getDisplayCharacter('\u0000', 0x0000), '␀', 'Control NUL maps to Control Picture');
+});
+
+
 

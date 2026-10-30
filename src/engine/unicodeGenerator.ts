@@ -119,22 +119,24 @@ export function getRandomEmojiColorStyle(): EmojiColorStyle {
   };
 }
 
+export const UNIVERSAL_FONT_FALLBACK = `'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Sans Symbols 2', 'Noto Sans Math', 'Noto Sans JP', 'Noto Sans SC', 'Noto Sans KR', 'Segoe UI Symbol', 'Symbola', 'Arial Unicode MS', 'DejaVu Sans', sans-serif`;
+
 export const FONT_FAMILIES = [
-  'monospace',
-  'serif',
-  'sans-serif',
-  'cursive',
-  'fantasy',
-  'system-ui',
-  '"Courier New", Courier, monospace',
-  '"Georgia", serif',
-  '"Times New Roman", Times, serif',
-  '"Trebuchet MS", sans-serif',
-  '"Arial Black", Gadget, sans-serif',
-  '"Impact", Charcoal, sans-serif',
-  '"Lucida Console", Monaco, monospace',
-  '"Comic Sans MS", "Comic Sans", cursive',
-  '"Palatino Linotype", "Book Antiqua", Palatino, serif',
+  `monospace, ${UNIVERSAL_FONT_FALLBACK}`,
+  `serif, ${UNIVERSAL_FONT_FALLBACK}`,
+  `sans-serif, ${UNIVERSAL_FONT_FALLBACK}`,
+  `cursive, ${UNIVERSAL_FONT_FALLBACK}`,
+  `fantasy, ${UNIVERSAL_FONT_FALLBACK}`,
+  `system-ui, ${UNIVERSAL_FONT_FALLBACK}`,
+  `"Courier New", Courier, monospace, ${UNIVERSAL_FONT_FALLBACK}`,
+  `"Georgia", serif, ${UNIVERSAL_FONT_FALLBACK}`,
+  `"Times New Roman", Times, serif, ${UNIVERSAL_FONT_FALLBACK}`,
+  `"Trebuchet MS", sans-serif, ${UNIVERSAL_FONT_FALLBACK}`,
+  `"Arial Black", Gadget, sans-serif, ${UNIVERSAL_FONT_FALLBACK}`,
+  `"Impact", Charcoal, sans-serif, ${UNIVERSAL_FONT_FALLBACK}`,
+  `"Lucida Console", Monaco, monospace, ${UNIVERSAL_FONT_FALLBACK}`,
+  `"Comic Sans MS", "Comic Sans", cursive, ${UNIVERSAL_FONT_FALLBACK}`,
+  `"Palatino Linotype", "Book Antiqua", Palatino, serif, ${UNIVERSAL_FONT_FALLBACK}`,
 ];
 
 // Deprecated or historically removed characters
@@ -689,14 +691,14 @@ export function generateRandomUnicode(
         const r = cjkRanges[Math.floor(Math.random() * cjkRanges.length)];
         const cp = Math.floor(r.start + Math.random() * (r.end - r.start + 1));
         info = getCodepointInfo(cp);
-      } else if (options.includePrivateUse && Math.random() < 0.15) {
-        // High-fidelity Private Use Area (PUA) sampling: BMP PUA, Plane 15, Plane 16
-        const puaPlanes = [
-          { start: 0xe000, end: 0xf8ff }, // BMP PUA (6,400)
-          { start: 0xf0000, end: 0xffffd }, // Supplementary PUA-A (65,534)
-          { start: 0x100000, end: 0x10fffd }, // Supplementary PUA-B (65,534)
+      } else if (options.includePrivateUse && Math.random() < 0.10) {
+        // High-fidelity BMP PUA sampling with iconic symbol support
+        const puaRanges = [
+          { start: 0xe000, end: 0xe07f }, // Standard BMP PUA start
+          { start: 0xe0a0, end: 0xe0d4 }, // Powerline glyphs
+          { start: 0xf800, end: 0xf8ff }, // Classic Apple & OS PUA (includes 0xF8FF)
         ];
-        const p = puaPlanes[Math.floor(Math.random() * puaPlanes.length)];
+        const p = puaRanges[Math.floor(Math.random() * puaRanges.length)];
         const cp = Math.floor(p.start + Math.random() * (p.end - p.start + 1));
         info = getCodepointInfo(cp);
       } else {
@@ -770,7 +772,7 @@ export function generateRandomUnicode(
         if (useGf && GOOGLE_FONTS_CATALOG.length > 0) {
           const font = GOOGLE_FONTS_CATALOG[Math.floor(Math.random() * GOOGLE_FONTS_CATALOG.length)];
           loadGoogleFont(font.name);
-          info.fontFamily = `"${font.name}", ${font.category}`;
+          info.fontFamily = `"${font.name}", ${font.category}, ${UNIVERSAL_FONT_FALLBACK}`;
           info.googleFont = font.name;
         } else {
           const sysFont = FONT_FAMILIES[Math.floor(Math.random() * FONT_FAMILIES.length)];

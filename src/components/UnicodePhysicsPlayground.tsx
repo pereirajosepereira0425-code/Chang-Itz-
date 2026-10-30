@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { UnicodeCharacterInfo } from '../engine/unicodeGenerator';
+import { UnicodeGlyph, UNIVERSAL_FALLBACK_FONTS } from './UnicodeGlyph';
 import {
   RotateCcw,
   Sparkles,
@@ -535,7 +536,7 @@ export const UnicodePhysicsPlayground: React.FC<UnicodePhysicsPlaygroundProps> =
                 transform: `translate(-50%, -50%) rotate(${body.rotation}deg) scale(${body.isDragged ? 1.15 : 1})`,
                 color: body.color,
                 filter: body.emojiFilter || undefined,
-                fontFamily: body.fontFamily || undefined,
+                fontFamily: body.fontFamily ? `${body.fontFamily}, ${UNIVERSAL_FALLBACK_FONTS}` : UNIVERSAL_FALLBACK_FONTS,
                 fontSize: `${body.fontSizePx}px`,
                 lineHeight: 1,
                 cursor: body.isDragged ? 'grabbing' : 'grab',
@@ -550,7 +551,7 @@ export const UnicodePhysicsPlayground: React.FC<UnicodePhysicsPlaygroundProps> =
               } ${body.isDragged ? 'drop-shadow-[0_8px_16px_rgba(245,158,11,0.5)]' : ''}`}
               title={`${body.charInfo.char} (${body.charInfo.hex}) - ${body.charInfo.emojiColorName ? `Emoji Color: ${body.charInfo.emojiColorName}` : `Color: ${body.color}`} | Click & drag to fling!`}
             >
-              {body.charInfo.char}
+              <UnicodeGlyph info={body.charInfo} />
             </div>
           );
         })}

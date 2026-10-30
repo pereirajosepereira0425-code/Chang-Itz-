@@ -6,6 +6,7 @@ import {
 } from '../engine/unicodeGenerator';
 import { getGoogleFontUrl } from '../engine/googleFonts';
 import { UnicodePhysicsPlayground } from './UnicodePhysicsPlayground';
+import { UnicodeGlyph, UNIVERSAL_FALLBACK_FONTS } from './UnicodeGlyph';
 import {
   Copy,
   Check,
@@ -35,7 +36,7 @@ export const RandomUnicodeGenerator: React.FC<RandomUnicodeGeneratorProps> = ({
   // Random Google Fonts and Random Sizes without limit applied to random characters at times
   const [options, setOptions] = useState<UnicodeGeneratorOptions>({
     includeCJK: true,
-    includePrivateUse: true,
+    includePrivateUse: false, // Default false to prevent unassigned box-with-X tofu glyphs
     includeDeprecated: true,
     includeLatest16: true,
     includeLegacySystems: true,
@@ -519,7 +520,7 @@ export const RandomUnicodeGenerator: React.FC<RandomUnicodeGeneratorProps> = ({
                     color: characters[0]?.color,
                     filter: characters[0]?.emojiFilter || undefined,
                     fontSize: characters[0]?.fontSize || '4.5rem',
-                    fontFamily: characters[0]?.fontFamily || undefined,
+                    fontFamily: characters[0]?.fontFamily ? `${characters[0].fontFamily}, ${UNIVERSAL_FALLBACK_FONTS}` : UNIVERSAL_FALLBACK_FONTS,
                     transform: characters[0]?.transform || undefined,
                     display: 'inline-block',
                     margin: characters[0]?.transform ? '0.35em' : '0.1em',
@@ -528,7 +529,7 @@ export const RandomUnicodeGenerator: React.FC<RandomUnicodeGeneratorProps> = ({
                   className="font-normal leading-none cursor-pointer hover:scale-105 active:scale-95 transition-all text-center select-all p-3"
                   title={`${characters[0]?.hex} - ${characters[0]?.googleFont || characters[0]?.fontFamily || 'Default'} (${characters[0]?.fontSize || 'default'})${characters[0]?.directionNote ? ` | Direction: ${characters[0].directionNote}` : ''}${characters[0]?.emojiColorName ? ` | Emoji Color: ${characters[0].emojiColorName}` : ''}`}
                 >
-                  {characters[0]?.char}
+                  <UnicodeGlyph info={characters[0]} />
                 </div>
               ) : (
                 /* All characters placed side-by-side with auto-fit margins for rotated directions & colorful emojis */
@@ -541,7 +542,7 @@ export const RandomUnicodeGenerator: React.FC<RandomUnicodeGeneratorProps> = ({
                         color: c.color,
                         filter: c.emojiFilter || undefined,
                         fontSize: c.fontSize || '2.8rem',
-                        fontFamily: c.fontFamily || undefined,
+                        fontFamily: c.fontFamily ? `${c.fontFamily}, ${UNIVERSAL_FALLBACK_FONTS}` : UNIVERSAL_FALLBACK_FONTS,
                         transform: c.transform || undefined,
                         display: 'inline-block',
                         margin: c.transform ? '0.3em' : '0.05em',
@@ -556,7 +557,7 @@ export const RandomUnicodeGenerator: React.FC<RandomUnicodeGeneratorProps> = ({
                       }`}
                       title={`${c.char} - ${c.hex} | Font: ${c.googleFont || c.fontFamily || 'System'} | Size: ${c.fontSize || 'default'}${c.directionNote ? ` | Direction: ${c.directionNote}` : ''}${c.emojiColorName ? ` | Emoji Color: ${c.emojiColorName}` : ''}`}
                     >
-                      {c.char}
+                      <UnicodeGlyph info={c} />
                     </span>
                   ))}
                 </div>
@@ -716,14 +717,14 @@ export const RandomUnicodeGenerator: React.FC<RandomUnicodeGeneratorProps> = ({
                       style={{
                         color: selectedChar.color,
                         filter: selectedChar.emojiFilter || undefined,
-                        fontFamily: selectedChar.fontFamily,
+                        fontFamily: selectedChar.fontFamily ? `${selectedChar.fontFamily}, ${UNIVERSAL_FALLBACK_FONTS}` : UNIVERSAL_FALLBACK_FONTS,
                         fontSize: selectedChar.fontSize,
                         transform: selectedChar.transform,
                         display: 'inline-block',
                       }}
                       className="text-2xl font-normal select-all"
                     >
-                      {selectedChar.char}
+                      <UnicodeGlyph info={selectedChar} />
                     </div>
                   </div>
 
