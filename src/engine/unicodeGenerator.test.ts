@@ -219,3 +219,27 @@ test('Spatial Math Engine correctly converts to .PI, .Vector3, and .quaternion',
   assert.ok(String(resultQuat.data).includes('3X3_ROTATION_MATRIX'), 'Contains 3x3 rotation matrix');
 });
 
+test('Convert-Master Engine parses Portal 2 demos, RTTTL ringtones, and formats', async () => {
+  const {
+    parsePortal2Demo,
+    parseRtttl,
+  } = await import('./converters/convertMasterEngine.ts');
+
+  // Test Portal 2 Demo parser
+  const demoBytes = new Uint8Array(1100);
+  const demoMagic = 'HL2DEMO';
+  for (let i = 0; i < demoMagic.length; i++) demoBytes[i] = demoMagic.charCodeAt(i);
+  const parsedDemo = await parsePortal2Demo(demoBytes);
+  assert.ok(parsedDemo.magic.startsWith('HL2DEMO'), 'Magic matches HL2DEMO');
+  assert.ok(parsedDemo.serverName.length > 0, 'Server name extracted');
+
+  // Test RTTTL parser
+  const rtttlString = 'NokiaTune:d=4,o=5,b=180:e6,d6,4f#5,4g#5,c#6,b,4d,4e,b,a,4c#,4e,2a';
+  const parsedRtttl = parseRtttl(rtttlString);
+  assert.equal(parsedRtttl.name, 'NokiaTune');
+  assert.equal(parsedRtttl.bpm, 180);
+  assert.equal(parsedRtttl.defaultOctave, 5);
+  assert.ok(parsedRtttl.notes.length > 5, 'Parsed more than 5 notes');
+});
+
+

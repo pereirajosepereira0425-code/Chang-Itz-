@@ -21,6 +21,7 @@ import { convertToDdlcChr, convertFromDdlcChr } from './converters/ddlcChrConver
 import { convertFromNes, convertToNes } from './converters/nesConverter';
 import { convertFromN64, convertToN64, convertFromWad, convertToWad } from './converters/n64WadConverter';
 import { convertToPi, convertToVector3, convertToQuaternion, convertFromSpatialMath } from './converters/spatialMathConverter';
+import { convertFromConvertMasterFormat } from './converters/convertMasterEngine';
 
 /**
  * Returns list of target format IDs that the given source format can convert into
@@ -336,6 +337,12 @@ export async function executeConversion(
   }
   if (file.name.toLowerCase().endsWith('.wad')) {
     return convertFromWad(file, targetFormat, params);
+  }
+
+  // Convert-Master game, 3D, and audio specialized formats
+  const cmExts = ['.dem', '.bbmodel', '.piskel', '.vtf', '.rpgmvp', '.love', '.osz', '.osk', '.apworld', '.flp', '.als', '.rtttl', '.nokring', '.grub', '.musicxml', '.mxl', '.cbr', '.7z', '.hwpx', '.azw3', '.mobi', '.glb', '.gltf', '.fbx', '.dae', '.3mf', '.sppd', '.mcmap', '.ipa', '.app', '.xpi', '.xcf', '.kra', '.krz', '.ota', '.xcur', '.itdb'];
+  if (cmExts.some((ext) => file.name.toLowerCase().endsWith(ext))) {
+    return convertFromConvertMasterFormat(file, targetFormat, params);
   }
 
   // DDLC .chr character file target or source
