@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Download, Copy, Check, Terminal, RotateCcw, Volume2, Image as ImageIcon, FileText, CheckCircle2 } from 'lucide-react';
+import { Download, Copy, Check, Terminal, RotateCcw, Volume2, Image as ImageIcon, FileText, CheckCircle2, ArrowLeftRight, Dices, Sparkles } from 'lucide-react';
 import { ConversionResult } from '../types/conversion';
 import { FORMATS } from '../engine/formats';
 
@@ -156,6 +156,19 @@ export const ConversionResultView: React.FC<ConversionResultViewProps> = ({
           </div>
         )}
 
+        {result.previewType === 'video' && result.previewUrl && (
+          <div className="flex flex-col items-center justify-center p-6 bg-slate-950/80 rounded-xl border border-slate-800/80 min-h-[260px] overflow-hidden">
+            <div className="p-3 bg-black/50 rounded-xl border border-slate-800 shadow-lg max-w-full flex flex-col items-center gap-2">
+              <video
+                controls
+                src={result.previewUrl}
+                className="max-h-[380px] max-w-full rounded-lg shadow-inner bg-black"
+              />
+              <span className="text-[11px] text-slate-400 font-mono">Rendered Video Stream ({targetFmt.name})</span>
+            </div>
+          </div>
+        )}
+
         {result.previewType === 'audio' && result.previewUrl && (
           <div className="p-8 bg-slate-950/80 rounded-xl border border-slate-800/80 flex flex-col items-center justify-center gap-4 text-center">
             <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-3xl">
@@ -205,46 +218,64 @@ export const ConversionResultView: React.FC<ConversionResultViewProps> = ({
           </div>
         )}
 
-        {/* Quick Re-convert Options */}
+        {/* Quick Swap & Re-convert Options */}
         {onChooseNewTarget && (
-          <div className="mt-5 pt-4 border-t border-slate-800/80">
-            <div className="flex items-center justify-between mb-2.5">
-              <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                <span>🔄</span>
-                <span>Want to convert this to another format?</span>
+          <div className="mt-5 pt-4 border-t border-slate-800/80 space-y-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                <ArrowLeftRight className="w-3.5 h-3.5 text-amber-400" />
+                <span>⇄ Swap Target Format (Convert to another thing):</span>
               </span>
-              <button
-                onClick={onReset}
-                className="text-xs text-amber-400 hover:underline font-semibold"
-              >
-                Browse All Formats ➔
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    const targets = ['mp4', 'mp3', 'webp', 'png', 'jpeg', 'svg', 'zip', 'json', 'csv', 'nes', 'pi'];
+                    const filtered = targets.filter(t => t !== result.outputFormat);
+                    const rand = filtered[Math.floor(Math.random() * filtered.length)];
+                    onChooseNewTarget(rand);
+                  }}
+                  className="text-xs text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-500/15 border border-amber-500/30 active:scale-95 transition-all"
+                >
+                  <Dices className="w-3.5 h-3.5" />
+                  <span>🎲 Random Swap</span>
+                </button>
+                <button
+                  onClick={onReset}
+                  className="text-xs text-slate-400 hover:text-slate-200 underline font-semibold"
+                >
+                  Browse All 1,000 Formats ➔
+                </button>
+              </div>
             </div>
 
             <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs scrollbar-none">
               {[
-                { id: 'webp', label: 'WebP', emoji: '🌐' },
-                { id: 'png', label: 'PNG', emoji: '🖼️' },
-                { id: 'jpeg', label: 'JPG', emoji: '📸' },
-                { id: 'svg', label: 'SVG', emoji: '📐' },
-                { id: 'csv', label: 'CSV', emoji: '📊' },
-                { id: 'json', label: 'JSON', emoji: '📦' },
-                { id: 'sql', label: 'SQL', emoji: '🗄️' },
+                { id: 'mp4', label: 'MP4 Video', emoji: '🎬' },
+                { id: 'mp3', label: 'MP3 Audio', emoji: '🎵' },
+                { id: 'webp', label: 'WebP Image', emoji: '🌐' },
+                { id: 'png', label: 'PNG Image', emoji: '🖼️' },
+                { id: 'jpeg', label: 'JPG Photo', emoji: '📸' },
+                { id: 'svg', label: 'SVG Vector', emoji: '📐' },
+                { id: 'wav', label: 'WAV Audio', emoji: '🎵' },
+                { id: 'csv', label: 'CSV Table', emoji: '📊' },
+                { id: 'json', label: 'JSON Data', emoji: '📦' },
+                { id: 'sql', label: 'SQL DB', emoji: '🗄️' },
                 { id: 'yaml', label: 'YAML', emoji: '⚙️' },
                 { id: 'markdown', label: 'Markdown', emoji: '📝' },
                 { id: 'html', label: 'HTML', emoji: '🌐' },
-                { id: 'asciiart', label: 'ASCII Art', emoji: '👾' },
-                { id: 'zip', label: 'ZIP', emoji: '🗜️' },
+                { id: 'nes', label: 'NES ROM', emoji: '🎮' },
+                { id: 'pi', label: '.PI Math', emoji: '🥧' },
+                { id: 'zip', label: 'ZIP Container', emoji: '🗜️' },
               ]
                 .filter((item) => item.id !== result.outputFormat)
                 .map((tgt) => (
                   <button
                     key={tgt.id}
                     onClick={() => onChooseNewTarget(tgt.id)}
-                    className="px-3 py-1.5 rounded-lg bg-slate-950/80 hover:bg-amber-500 hover:text-slate-950 text-slate-300 border border-slate-800 transition-all font-semibold flex items-center gap-1.5 shrink-0"
+                    className="px-3 py-1.5 rounded-lg bg-slate-950/80 hover:bg-amber-500 hover:text-slate-950 text-slate-300 border border-slate-800 transition-all font-semibold flex items-center gap-1.5 shrink-0 active:scale-95 shadow-sm"
                   >
                     <span>{tgt.emoji}</span>
-                    <span>Convert to {tgt.label}</span>
+                    <span>⇄ Swap to {tgt.label}</span>
                   </button>
                 ))}
             </div>

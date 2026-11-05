@@ -19,14 +19,48 @@ export const FormatExplorer: React.FC<FormatExplorerProps> = ({
   const activeFmt = FORMATS[activeFormatId] || allFormats[0];
   const targets = getAvailableTargets(activeFormatId).map((id) => FORMATS[id]).filter(Boolean);
 
+  const q = search.toLowerCase().trim();
+  const qClean = q.startsWith('.') ? q.slice(1) : q;
+  const isSearching = q.length > 0;
+
+  const priorityIds = ['mp4', 'mp3', 'png', 'jpeg', 'webp', 'svg', 'wav', 'webm', 'json', 'csv', 'zip'];
+
   const filteredFormats = allFormats.filter((fmt) => {
     const matchesSearch =
-      fmt.name.toLowerCase().includes(search.toLowerCase()) ||
-      fmt.id.toLowerCase().includes(search.toLowerCase()) ||
-      fmt.extension.toLowerCase().includes(search.toLowerCase()) ||
-      fmt.description.toLowerCase().includes(search.toLowerCase());
-    const matchesCat = selectedCat === 'all' || fmt.category === selectedCat;
+      !isSearching ||
+      fmt.id.toLowerCase().includes(q) ||
+      fmt.id.toLowerCase().includes(qClean) ||
+      fmt.name.toLowerCase().includes(q) ||
+      fmt.extension.toLowerCase().includes(q) ||
+      fmt.extension.toLowerCase().includes('.' + qClean) ||
+      (fmt.description && fmt.description.toLowerCase().includes(q)) ||
+      (fmt.category && fmt.category.toLowerCase().includes(q));
+    const matchesCat = isSearching || selectedCat === 'all' || fmt.category === selectedCat;
     return matchesSearch && matchesCat;
+  }).sort((a, b) => {
+    if (isSearching) {
+      const aExact = a.id.toLowerCase() === qClean || a.extension.toLowerCase() === '.' + qClean;
+      const bExact = b.id.toLowerCase() === qClean || b.extension.toLowerCase() === '.' + qClean;
+      if (aExact && !bExact) return -1;
+      if (!aExact && bExact) return 1;
+    }
+    if (selectedCat === 'video') {
+      if (a.id === 'mp4') return -1;
+      if (b.id === 'mp4') return 1;
+      if (a.id === 'webm') return -1;
+      if (b.id === 'webm') return 1;
+    } else if (selectedCat === 'audio') {
+      if (a.id === 'mp3') return -1;
+      if (b.id === 'mp3') return 1;
+      if (a.id === 'wav') return -1;
+      if (b.id === 'wav') return 1;
+    }
+    const aPri = priorityIds.indexOf(a.id);
+    const bPri = priorityIds.indexOf(b.id);
+    if (aPri !== -1 && bPri !== -1) return aPri - bPri;
+    if (aPri !== -1) return -1;
+    if (bPri !== -1) return 1;
+    return a.name.localeCompare(b.name);
   });
 
   return (
@@ -35,8 +69,8 @@ export const FormatExplorer: React.FC<FormatExplorerProps> = ({
       <div className="p-6 rounded-2xl bg-slate-900/60 border border-slate-800">
         <h2 className="text-xl font-extrabold text-slate-100 flex items-center gap-2">
           <span>🌐 Chang-Itz Format Graph & Matrix</span>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            {allFormats.length} Total Formats
+          <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            {allFormats.length} Native Formats · 999,000 Supported Pathways · 100,000+ Codecs
           </span>
         </h2>
         <p className="text-xs text-slate-400 mt-1">

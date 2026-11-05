@@ -43,6 +43,9 @@ export const Header: React.FC<HeaderProps> = ({
                 <span>🦊</span>
                 <span>Mascot Edition</span>
               </span>
+              <span className="hidden lg:inline text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+                1,000 Formats · 999,000 Pathways
+              </span>
             </div>
             <p className="text-xs text-slate-400 font-medium">
               If it has bytes, we can Chang-Itz! 🚀

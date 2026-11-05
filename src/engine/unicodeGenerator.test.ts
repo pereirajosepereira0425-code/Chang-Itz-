@@ -112,6 +112,20 @@ test('Format Matrix includes required categories with expanded formats and .nes 
   assert.ok(FORMATS.wad, 'FORMATS.wad exists');
   assert.equal(FORMATS.wad.category, 'archive', 'wad is archive category');
   assert.equal(FORMATS.wad.isBinary, true, 'wad is binary');
+
+  // 7. MP4 Video format & Search functionality
+  assert.ok(FORMATS.mp4, 'FORMATS.mp4 exists');
+  assert.equal(FORMATS.mp4.extension, '.mp4', 'mp4 extension is .mp4');
+  assert.equal(FORMATS.mp4.category, 'video', 'mp4 category is video');
+
+  // Test searching "mp4" across all formats
+  const query = 'mp4';
+  const matches = Object.values(FORMATS).filter((f) =>
+    f.id.toLowerCase().includes(query) ||
+    f.name.toLowerCase().includes(query) ||
+    f.extension.toLowerCase().includes(query)
+  );
+  assert.ok(matches.some((m) => m.id === 'mp4'), 'Searching "mp4" finds MP4 Video');
 });
 
 test('N64 ROM Endianness Engine detects, parses, and swaps bytes correctly', async () => {

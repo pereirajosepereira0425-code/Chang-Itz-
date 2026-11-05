@@ -35,10 +35,10 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTab }) => {
           <div className="p-4 rounded-xl bg-slate-900/50 border border-slate-800/80 space-y-1.5">
             <div className="flex items-center gap-2 text-slate-200 font-bold">
               <Cpu className="w-4 h-4 text-cyan-400" />
-              <span>600+ Formats & Pipelines</span>
+              <span>1,000 Formats & 999,000 Pathways</span>
             </div>
             <p className="text-[11px] text-slate-500 leading-normal">
-              Convert between all 600+ images, video streams, audio chiptunes, databases, docs, code, and packages.
+              Convert across all 1,000 native images, video streams, audio chiptunes, databases, docs, code, and packages through 999,000 direct pipelines.
             </p>
           </div>
 

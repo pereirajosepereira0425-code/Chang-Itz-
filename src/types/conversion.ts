@@ -56,7 +56,7 @@ export interface ConversionResult {
   outputName: string;
   outputFormat: string;
   mimeType: string;
-  previewType: 'image' | 'audio' | 'text' | 'archive' | 'hex' | 'none';
+  previewType: 'image' | 'audio' | 'video' | 'text' | 'archive' | 'hex' | 'none';
   textContent?: string;
   previewUrl?: string;
   logs: LogEntry[];
