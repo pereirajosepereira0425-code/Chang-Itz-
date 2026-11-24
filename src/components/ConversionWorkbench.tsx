@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, ArrowLeftRight, Dices, Shuffle, Settings2, Zap, Search, Check, Sparkles, Filter, Globe2 } from 'lucide-react';
 import { FormatDefinition, ConversionParams } from '../types/conversion';
-import { FORMATS, CATEGORIES } from '../engine/formats';
+import { FORMATS, CATEGORIES, TOTAL_FORMAT_COUNT, TOTAL_PATHWAY_COUNT } from '../engine/formats';
 import { getAvailableTargets, getConversionOptions } from '../engine/converterRegistry';
 
 interface ConversionWorkbenchProps {
@@ -37,6 +37,16 @@ export const ConversionWorkbench: React.FC<ConversionWorkbenchProps> = ({
   const popularSwapShortcuts = [
     { id: 'mp4', label: 'MP4 Video', emoji: '🎬' },
     { id: 'mp3', label: 'MP3 Audio', emoji: '🎵' },
+    { id: 'fnfc', label: 'FNF .fnfc', emoji: '🎤' },
+    { id: 'fnf_psych', label: 'Psych Chart', emoji: '🎶' },
+    { id: 'fnaf', label: 'FNAF .fnaf', emoji: '🐻' },
+    { id: 'fnaf_freddy', label: '.freddy Save', emoji: '🍕' },
+    { id: 'dll', label: 'Windows .dll', emoji: '🧩' },
+    { id: 'malbolge', label: 'Malbolge', emoji: '👹' },
+    { id: 'fasta_dna', label: 'DNA .fasta', emoji: '🧬' },
+    { id: 'openqasm3', label: 'Quantum .qasm', emoji: '⚛️' },
+    { id: 'sstv_martin', label: 'ISS SSTV Audio', emoji: '📻' },
+    { id: 'zwc_stego', label: 'Ghost Stego', emoji: '👻' },
     { id: 'webp', label: 'WebP Image', emoji: '🌐' },
     { id: 'png', label: 'PNG Image', emoji: '🖼️' },
     { id: 'jpeg', label: 'JPG Photo', emoji: '📸' },
@@ -155,11 +165,11 @@ export const ConversionWorkbench: React.FC<ConversionWorkbenchProps> = ({
             <span>Supported Scale:</span>
           </span>
           <span className="px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold">
-            1,000 Native Formats
+            {TOTAL_FORMAT_COUNT.toLocaleString()} Native Formats
           </span>
         </div>
         <div className="flex items-center gap-1.5 text-slate-300">
-          <span className="text-emerald-400 font-bold">⚡ 999,000</span>
+          <span className="text-emerald-400 font-bold">⚡ {TOTAL_PATHWAY_COUNT.toLocaleString()}</span>
           <span className="text-slate-400">Cross-Conversion Pathways</span>
         </div>
         <div className="flex items-center gap-1.5 text-slate-300">
@@ -369,7 +379,7 @@ export const ConversionWorkbench: React.FC<ConversionWorkbenchProps> = ({
           <div className="text-xs text-slate-400 flex flex-wrap items-center gap-2">
             <span className="text-emerald-400 font-semibold">🔒 100% Client-Side Engine</span>
             <span>·</span>
-            <span className="font-mono text-slate-300">999,000 Supported Pathways</span>
+            <span className="font-mono text-slate-300">{TOTAL_PATHWAY_COUNT.toLocaleString()} Supported Pathways</span>
             <span>·</span>
             <span className="font-mono text-cyan-400">1,048,576 Byte Buffer</span>
           </div>
@@ -474,7 +484,7 @@ export const ConversionWorkbench: React.FC<ConversionWorkbenchProps> = ({
             <h3 className="text-base sm:text-lg font-extrabold text-slate-100 flex items-center gap-2 flex-wrap">
               <span>🎯 Choose What You Want To Convert It To</span>
               <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono">
-                {filteredTargets.length} Options · 999,000 Total Pathways · 1,000 Formats
+                {filteredTargets.length} Options · {TOTAL_PATHWAY_COUNT.toLocaleString()} Total Pathways · {TOTAL_FORMAT_COUNT.toLocaleString()} Formats
               </span>
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
@@ -493,7 +503,7 @@ export const ConversionWorkbench: React.FC<ConversionWorkbenchProps> = ({
             }`}
           >
             <Globe2 className="w-3.5 h-3.5" />
-            <span>{showAllFormats ? 'Showing All 1,000 Formats (999,000 Pathways)' : 'Unlock All 1,000 Formats (999,000 Pathways)'}</span>
+            <span>{showAllFormats ? `Showing All ${TOTAL_FORMAT_COUNT.toLocaleString()} Formats (${TOTAL_PATHWAY_COUNT.toLocaleString()} Pathways)` : `Unlock All ${TOTAL_FORMAT_COUNT.toLocaleString()} Formats (${TOTAL_PATHWAY_COUNT.toLocaleString()} Pathways)`}</span>
           </button>
         </div>
 

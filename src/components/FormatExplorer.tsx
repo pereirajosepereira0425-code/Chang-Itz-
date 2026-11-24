@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, ArrowRight, Sparkles, Filter, ExternalLink } from 'lucide-react';
-import { FORMATS, CATEGORIES } from '../engine/formats';
+import { FORMATS, CATEGORIES, TOTAL_PATHWAY_COUNT } from '../engine/formats';
 import { getAvailableTargets } from '../engine/converterRegistry';
 import { FormatDefinition } from '../types/conversion';
 
@@ -70,7 +70,7 @@ export const FormatExplorer: React.FC<FormatExplorerProps> = ({
         <h2 className="text-xl font-extrabold text-slate-100 flex items-center gap-2">
           <span>🌐 Chang-Itz Format Graph & Matrix</span>
           <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            {allFormats.length} Native Formats · 999,000 Supported Pathways · 100,000+ Codecs
+            {allFormats.length.toLocaleString()} Native Formats · {TOTAL_PATHWAY_COUNT.toLocaleString()} Supported Pathways · 100,000+ Codecs
           </span>
         </h2>
         <p className="text-xs text-slate-400 mt-1">

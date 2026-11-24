@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Download, Copy, Check, Terminal, RotateCcw, Volume2, Image as ImageIcon, FileText, CheckCircle2, ArrowLeftRight, Dices, Sparkles } from 'lucide-react';
 import { ConversionResult } from '../types/conversion';
-import { FORMATS } from '../engine/formats';
+import { FORMATS, TOTAL_FORMAT_COUNT } from '../engine/formats';
 
 interface ConversionResultViewProps {
   result: ConversionResult;
@@ -229,7 +229,7 @@ export const ConversionResultView: React.FC<ConversionResultViewProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => {
-                    const targets = ['mp4', 'mp3', 'webp', 'png', 'jpeg', 'svg', 'zip', 'json', 'csv', 'nes', 'pi'];
+                    const targets = ['mp4', 'mp3', 'fnfc', 'fnf_psych', 'fnaf', 'fnaf_freddy', 'dll', 'webp', 'png', 'jpeg', 'svg', 'zip', 'json', 'csv', 'nes', 'pi'];
                     const filtered = targets.filter(t => t !== result.outputFormat);
                     const rand = filtered[Math.floor(Math.random() * filtered.length)];
                     onChooseNewTarget(rand);
@@ -243,7 +243,7 @@ export const ConversionResultView: React.FC<ConversionResultViewProps> = ({
                   onClick={onReset}
                   className="text-xs text-slate-400 hover:text-slate-200 underline font-semibold"
                 >
-                  Browse All 1,000 Formats ➔
+                  Browse All {TOTAL_FORMAT_COUNT.toLocaleString()} Formats ➔
                 </button>
               </div>
             </div>
@@ -252,6 +252,16 @@ export const ConversionResultView: React.FC<ConversionResultViewProps> = ({
               {[
                 { id: 'mp4', label: 'MP4 Video', emoji: '🎬' },
                 { id: 'mp3', label: 'MP3 Audio', emoji: '🎵' },
+                { id: 'fnfc', label: 'FNF .fnfc', emoji: '🎤' },
+                { id: 'fnf_psych', label: 'Psych Chart', emoji: '🎶' },
+                { id: 'fnaf', label: 'FNAF .fnaf', emoji: '🐻' },
+                { id: 'fnaf_freddy', label: '.freddy Save', emoji: '🍕' },
+                { id: 'dll', label: 'Windows .dll', emoji: '🧩' },
+                { id: 'malbolge', label: 'Malbolge', emoji: '👹' },
+                { id: 'fasta_dna', label: 'DNA .fasta', emoji: '🧬' },
+                { id: 'openqasm3', label: 'Quantum .qasm', emoji: '⚛️' },
+                { id: 'sstv_martin', label: 'ISS SSTV Audio', emoji: '📻' },
+                { id: 'zwc_stego', label: 'Ghost Stego', emoji: '👻' },
                 { id: 'webp', label: 'WebP Image', emoji: '🌐' },
                 { id: 'png', label: 'PNG Image', emoji: '🖼️' },
                 { id: 'jpeg', label: 'JPG Photo', emoji: '📸' },

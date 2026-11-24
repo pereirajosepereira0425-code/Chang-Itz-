@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sliders, HelpCircle, Sparkles, FolderArchive, Terminal } from 'lucide-react';
 import { ChangItzMascot } from './ChangItzMascot';
+import { TOTAL_FORMAT_COUNT, TOTAL_PATHWAY_COUNT } from '../engine/formats';
 
 interface HeaderProps {
   activeTab: 'convert' | 'batch' | 'studio' | 'matrix' | 'unicode';
@@ -44,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <span>Mascot Edition</span>
               </span>
               <span className="hidden lg:inline text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
-                1,000 Formats · 999,000 Pathways
+                {TOTAL_FORMAT_COUNT.toLocaleString()} Formats · {TOTAL_PATHWAY_COUNT.toLocaleString()} Pathways
               </span>
             </div>
             <p className="text-xs text-slate-400 font-medium">

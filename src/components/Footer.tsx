@@ -1,6 +1,7 @@
 import React from 'react';
 import { ShieldCheck, Zap, Lock, Cpu, Heart } from 'lucide-react';
 import { ChangItzMascot } from './ChangItzMascot';
+import { TOTAL_FORMAT_COUNT, TOTAL_PATHWAY_COUNT } from '../engine/formats';
 
 interface FooterProps {
   onSelectTab: (tab: 'convert' | 'batch' | 'studio' | 'matrix') => void;
@@ -35,10 +36,10 @@ export const Footer: React.FC<FooterProps> = ({ onSelectTab }) => {
           <div className="p-4 rounded-xl bg-slate-900/50 border border-slate-800/80 space-y-1.5">
             <div className="flex items-center gap-2 text-slate-200 font-bold">
               <Cpu className="w-4 h-4 text-cyan-400" />
-              <span>1,000 Formats & 999,000 Pathways</span>
+              <span>{TOTAL_FORMAT_COUNT.toLocaleString()} Formats & {TOTAL_PATHWAY_COUNT.toLocaleString()} Pathways</span>
             </div>
             <p className="text-[11px] text-slate-500 leading-normal">
-              Convert across all 1,000 native images, video streams, audio chiptunes, databases, docs, code, and packages through 999,000 direct pipelines.
+              Convert across all {TOTAL_FORMAT_COUNT.toLocaleString()} native images, video streams, FNF/FNAF files, Windows DLLs, audio chiptunes, databases, docs, code, and packages through {TOTAL_PATHWAY_COUNT.toLocaleString()} direct pipelines.
             </p>
           </div>
 

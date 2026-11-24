@@ -22,6 +22,20 @@ import { convertFromNes, convertToNes } from './converters/nesConverter';
 import { convertFromN64, convertToN64, convertFromWad, convertToWad } from './converters/n64WadConverter';
 import { convertToPi, convertToVector3, convertToQuaternion, convertFromSpatialMath } from './converters/spatialMathConverter';
 import { convertFromConvertMasterFormat } from './converters/convertMasterEngine';
+import { convertToDll, convertFromDll } from './converters/dllConverter';
+import {
+  convertFnfFormat,
+  convertFromFnfc,
+  convertFnafFormat,
+  FNF_FORMAT_IDS,
+  FNAF_FORMAT_IDS,
+} from './converters/fnfFnafConverter';
+import {
+  convertWeirdComplexFormat,
+  convertFromWeirdFormat,
+  WEIRD_COMPLEX_FORMAT_IDS,
+  WeirdComplexFormatId,
+} from './converters/weirdComplexConverter';
 
 /**
  * Returns list of target format IDs that the given source format can convert into
@@ -34,11 +48,24 @@ export function getAvailableTargets(sourceFormatId: string, includeAll: boolean 
   const src = FORMATS[sourceFormatId] || FORMATS.txt;
   const targets = new Set<string>();
 
-  // Universal targets (MP4, MP3, PI, Vector3, Quaternion, NES, N64, WAD, DDLC chr, video, hashes, packages, meme container, zip, hexdump, base64)
-  const universal = ['mp4', 'mp3', 'pi', 'vector3', 'quaternion', 'nes', 'z64', 'n64', 'v64', 'wad', 'chr', 'bruh', 'apk', 'xapk', 'truehd', 'thd', 'webm', 'avi', 'zip', 'hexdump', 'base64', 'sha256', 'sha512', 'sha1', 'md5', 'crc32'];
+  // Universal targets (MP4, MP3, FNF, FNAF, DLL, Weird & Cosmic Formats, PI, Vector3, Quaternion, NES, N64, WAD, DDLC chr, video, hashes, packages, meme container, zip, hexdump, base64)
+  const universal = [
+    'mp4', 'mp3', 'fnfc', 'fnf_psych', 'fnf_lua', 'fnf_hxc', 'fnf_cne', 'fnf_kade',
+    'fnaf', 'fnaf_freddy', 'fnaf_mfa', 'fnaf_sav', 'dll',
+    'malbolge', 'fasta_dna', 'openqasm3', 'sstv_martin', 'zwc_stego', 'gw_strain', 'feynman_diag', 'poly_tesseract_obj',
+    'pi', 'vector3', 'quaternion', 'nes', 'z64', 'n64', 'v64', 'wad', 'chr',
+    'bruh', 'apk', 'xapk', 'truehd', 'thd', 'webm', 'avi', 'zip', 'hexdump', 'base64',
+    'sha256', 'sha512', 'sha1', 'md5', 'crc32'
+  ];
   universal.forEach((t) => targets.add(t));
 
-  if (['pi', 'vector3', 'quaternion'].includes(sourceFormatId)) {
+  if ((FNF_FORMAT_IDS as readonly string[]).includes(sourceFormatId)) {
+    [...FNF_FORMAT_IDS, 'json', 'xml', 'txt', 'zip', 'dll'].forEach((t) => targets.add(t));
+  } else if ((FNAF_FORMAT_IDS as readonly string[]).includes(sourceFormatId)) {
+    [...FNAF_FORMAT_IDS, 'json', 'txt', 'zip', 'dll'].forEach((t) => targets.add(t));
+  } else if (sourceFormatId === 'dll') {
+    ['json', 'txt', 'hexdump', 'base64', 'zip', 'fnfc', 'fnaf'].forEach((t) => targets.add(t));
+  } else if (['pi', 'vector3', 'quaternion'].includes(sourceFormatId)) {
     ['pi', 'vector3', 'quaternion', 'json', 'csv', 'txt', 'hexdump', 'base64'].forEach((t) => targets.add(t));
   } else if (sourceFormatId === 'nes') {
     ['json', 'png', 'chr', 'bin', 'txt', 'hexdump', 'base64', 'zip', 'sha256'].forEach((t) => targets.add(t));
@@ -287,6 +314,105 @@ export function getConversionOptions(targetFormatId: string): ConversionOption[]
           ],
         },
       ];
+    case 'dll':
+      return [
+        {
+          id: 'dllArch',
+          label: 'Target CPU Architecture',
+          type: 'select',
+          defaultValue: 'x64',
+          options: [
+            { label: 'x64 (AMD64 / PE32+ 64-bit)', value: 'x64' },
+            { label: 'x86 (i386 / PE32 32-bit)', value: 'x86' },
+          ],
+          description: 'Select PE32+ (64-bit) or PE32 (32-bit) Windows DLL binary header layout',
+        },
+        {
+          id: 'exportSymbol',
+          label: 'Exported Function Name',
+          type: 'text',
+          defaultValue: 'ChangItzEntry',
+          description: 'Symbol exported alongside DllMain in the PE Export Directory (.rdata)',
+        },
+      ];
+    case 'fnfc':
+    case 'fnf_psych':
+    case 'fnf_cne':
+    case 'fnf_kade':
+    case 'fnf_lua':
+    case 'fnf_hxc':
+      return [
+        {
+          id: 'bpm',
+          label: 'Song Tempo (BPM)',
+          type: 'number',
+          defaultValue: 135,
+          min: 60,
+          max: 300,
+          step: 5,
+          description: 'Beats per minute used for FNF chart timing and modchart beat events',
+        },
+        {
+          id: 'scrollSpeed',
+          label: 'Note Scroll Speed',
+          type: 'number',
+          defaultValue: 2.6,
+          min: 1.0,
+          max: 5.0,
+          step: 0.2,
+          description: 'Arrow scroll velocity multiplier',
+        },
+        {
+          id: 'character',
+          label: 'Player 1 Character',
+          type: 'select',
+          defaultValue: 'bf',
+          options: [
+            { label: 'Boyfriend (bf)', value: 'bf' },
+            { label: 'Pico (pico-playable)', value: 'pico-playable' },
+            { label: 'Girlfriend (gf)', value: 'gf' },
+          ],
+        },
+      ];
+    case 'fnaf':
+    case 'fnaf_freddy':
+    case 'fnaf_mfa':
+    case 'fnaf_ccn':
+      return [
+        {
+          id: 'night',
+          label: 'Night Number (1-7)',
+          type: 'number',
+          defaultValue: 5,
+          min: 1,
+          max: 7,
+          step: 1,
+          description: 'Select Night 1-5, Night 6, or Night 7 (Custom Night)',
+        },
+        {
+          id: 'aiLevel',
+          label: 'Animatronic AI Difficulty (0-20)',
+          type: 'number',
+          defaultValue: 20,
+          min: 0,
+          max: 20,
+          step: 1,
+          description: 'Sets Freddy, Bonnie, Chica & Foxy aggression (20 = 4/20 Mode)',
+        },
+      ];
+    case 'midi_black':
+      return [
+        {
+          id: 'noteDensity',
+          label: 'Cascade Note Count',
+          type: 'number',
+          defaultValue: 600,
+          min: 100,
+          max: 2000,
+          step: 100,
+          description: 'Controls how many hyper-dense overlapping notes pack into the Black MIDI roll',
+        },
+      ];
     default:
       return [];
   }
@@ -484,6 +610,41 @@ export async function executeConversion(
   }
   if (file.name.toLowerCase().endsWith('.chr')) {
     return convertFromDdlcChr(file, targetFormat);
+  }
+
+  // Windows Dynamic-Link Library (.dll) target or source
+  if (targetFormat === 'dll') {
+    return convertToDll(file, params);
+  }
+  if (file.name.toLowerCase().endsWith('.dll')) {
+    return convertFromDll(file, targetFormat);
+  }
+
+  // Friday Night Funkin' (FNF) .fnfc source extraction & conversion (must precede target check for .fnfc -> fnf_psych round-trips)
+  if (file.name.toLowerCase().endsWith('.fnfc') && targetFormat !== 'fnfc') {
+    return convertFromFnfc(file, targetFormat);
+  }
+  if ((FNF_FORMAT_IDS as readonly string[]).includes(targetFormat)) {
+    return convertFnfFormat(file, targetFormat, params);
+  }
+
+  // Five Nights at Freddy's (FNAF) targets
+  if ((FNAF_FORMAT_IDS as readonly string[]).includes(targetFormat)) {
+    return convertFnafFormat(file, targetFormat, params);
+  }
+
+  // Lossless reverse decoding for .fasta DNA or .zwc.txt invisible Unicode steganography
+  const lowerName = file.name.toLowerCase();
+  if (
+    (lowerName.endsWith('.fasta') || lowerName.endsWith('.zwc.txt')) &&
+    !(WEIRD_COMPLEX_FORMAT_IDS as readonly string[]).includes(targetFormat)
+  ) {
+    return convertFromWeirdFormat(file, targetFormat);
+  }
+
+  // 50 Weird, Confusing, Out-of-This-World & Complex File Formats (precedes generic image/audio handlers)
+  if ((WEIRD_COMPLEX_FORMAT_IDS as readonly string[]).includes(targetFormat)) {
+    return convertWeirdComplexFormat(file, targetFormat as WeirdComplexFormatId, params);
   }
 
   // Bruh target

@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { UploadCloud, CheckCircle2, RefreshCw, Sparkles, Target, ArrowRight, ArrowLeftRight, Dices, Search, X } from 'lucide-react';
 import { FormatDefinition } from '../types/conversion';
 import { createSampleFiles, SampleFile } from '../engine/sampleFiles';
-import { FORMATS } from '../engine/formats';
+import { FORMATS, TOTAL_FORMAT_COUNT, TOTAL_PATHWAY_COUNT } from '../engine/formats';
 import { ChangItzMascot } from './ChangItzMascot';
 
 interface DropZoneProps {
@@ -33,6 +33,16 @@ export const DropZone: React.FC<DropZoneProps> = ({
   const popularTargets = [
     { id: 'mp4', label: 'MP4 Video', emoji: '🎬' },
     { id: 'mp3', label: 'MP3 Audio', emoji: '🎵' },
+    { id: 'fnfc', label: 'FNF .fnfc', emoji: '🎤' },
+    { id: 'fnf_psych', label: 'Psych Chart', emoji: '🎶' },
+    { id: 'fnaf', label: 'FNAF .fnaf', emoji: '🐻' },
+    { id: 'fnaf_freddy', label: '.freddy Save', emoji: '🍕' },
+    { id: 'dll', label: 'Windows .dll', emoji: '🧩' },
+    { id: 'malbolge', label: 'Malbolge', emoji: '👹' },
+    { id: 'fasta_dna', label: 'DNA .fasta', emoji: '🧬' },
+    { id: 'openqasm3', label: 'Quantum .qasm', emoji: '⚛️' },
+    { id: 'sstv_martin', label: 'ISS SSTV Audio', emoji: '📻' },
+    { id: 'zwc_stego', label: 'Ghost Stego', emoji: '👻' },
     { id: 'pi', label: '.PI Math', emoji: '🥧' },
     { id: 'vector3', label: '.Vector3', emoji: '📐' },
     { id: 'quaternion', label: '.quaternion', emoji: '🔄' },
@@ -179,11 +189,11 @@ export const DropZone: React.FC<DropZoneProps> = ({
             <span>Supported Scale:</span>
           </span>
           <span className="px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold">
-            1,000 Native Formats
+            {TOTAL_FORMAT_COUNT.toLocaleString()} Native Formats
           </span>
         </div>
         <div className="flex items-center gap-1.5 text-slate-300">
-          <span className="text-emerald-400 font-bold">⚡ 999,000</span>
+          <span className="text-emerald-400 font-bold">⚡ {TOTAL_PATHWAY_COUNT.toLocaleString()}</span>
           <span className="text-slate-400">Cross-Conversion Pathways</span>
         </div>
         <div className="flex items-center gap-1.5 text-slate-300">
@@ -263,12 +273,12 @@ export const DropZone: React.FC<DropZoneProps> = ({
           })}
         </div>
 
-        {/* Search Input for All 1,000 Formats Across 999,000 Pathways */}
+        {/* Search Input for All Formats Across Pathways */}
         <div className="mt-3 relative">
           <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
           <input
             type="text"
-            placeholder="Search all 1,000 target formats across 999,000 cross-conversion pathways (e.g. mp4, mp3, webp, wav, snes, gba, blend)..."
+            placeholder={`Search all ${TOTAL_FORMAT_COUNT.toLocaleString()} target formats across ${TOTAL_PATHWAY_COUNT.toLocaleString()} pathways (e.g. fnfc, fnaf, dll, mp4, mp3, webp)...`}
             value={targetSearch}
             onChange={(e) => setTargetSearch(e.target.value)}
             className="w-full pl-8 pr-8 py-1.5 text-xs bg-slate-950/90 border border-slate-800 rounded-xl text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500"
